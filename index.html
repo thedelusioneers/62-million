@@ -1,2 +1,865 @@
-# 62-million
-Source list for research on internet traffic numbers 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M3DZTK6N');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q7P6EGFWVV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Q7P6EGFWVV');
+</script>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  
+<title>62 Million — A Scale Document</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #f0f0ec;
+    --bg-dark: #e4e4de;
+    --ink: #1a1a1a;
+    --ink-mid: #3a3a3a;
+    --ink-light: #6a6a6a;
+    --ink-faded: #9a9a9a;
+    --red: #c41e1e;
+    --red-dark: #8b1515;
+    --rule: rgba(0,0,0,0.12);
+    --width: min(680px, 94vw);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #d8d8d2;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 0 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--red);
+    z-index: 200;
+    transition: width 0.05s linear;
+  }
+
+  /* Document container */
+  .document {
+    width: var(--width);
+    background: var(--bg);
+    margin-top: 48px;
+    position: relative;
+    box-shadow: 0 2px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+    /* Subtle paper texture */
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      rgba(0,0,0,0.025) 23px,
+      rgba(0,0,0,0.025) 24px
+    );
+  }
+
+  /* Header block */
+  .doc-header {
+    padding: 48px 48px 36px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .doc-classification {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .doc-classification .red { color: var(--red); }
+
+  .doc-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 42px;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+
+  .doc-subtitle {
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    max-width: 480px;
+  }
+
+  .doc-meta {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .doc-meta-item .label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .doc-meta-item .value {
+    font-size: 11px;
+    color: var(--ink-mid);
+  }
+
+  /* Body */
+  .doc-body {
+    padding: 0 48px;
+  }
+
+  /* Sections */
+  .section {
+    padding: 36px 0;
+    border-bottom: 1px solid var(--rule);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-label {
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* The number display */
+  .number-hero {
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .number-hero .the-number {
+    font-family: 'Special Elite', monospace;
+    font-size: 88px;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -3px;
+    display: block;
+  }
+
+  .number-hero .number-unit {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-top: 8px;
+    display: block;
+  }
+
+  .number-hero .number-period {
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* Chart: horizontal bar */
+  .bar-chart {
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 90px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .bar-row.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .bar-label {
+    font-size: 9.5px;
+    color: var(--ink-mid);
+    text-align: right;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+  }
+
+  .bar-track {
+    height: 18px;
+    background: var(--bg-dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--ink-light);
+    width: 0;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .bar-fill.highlight {
+    background: var(--red);
+  }
+
+  .bar-fill.subject {
+    background: var(--ink);
+  }
+
+  .bar-value {
+    font-size: 9px;
+    color: var(--ink-faded);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .bar-value.highlight { color: var(--red); font-weight: 700; }
+  .bar-value.subject { color: var(--ink); font-weight: 700; }
+
+  /* Chart title */
+  .chart-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 20px;
+  }
+
+  /* Divider line in chart */
+  .bar-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--rule);
+    margin: 6px 0;
+  }
+
+  /* Fact block */
+  .fact-block {
+    background: var(--bg-dark);
+    padding: 20px 24px;
+    border-left: 3px solid var(--ink);
+    margin: 20px 0;
+  }
+
+  .fact-block p {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  .fact-block .stat {
+    font-family: 'Special Elite', monospace;
+    font-size: 28px;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .fact-block .stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  /* The key finding */
+  .finding {
+    border: 1px solid var(--ink);
+    padding: 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+
+  .finding::before {
+    content: 'FINDING';
+    position: absolute;
+    top: -9px;
+    left: 16px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: var(--ink-faded);
+  }
+
+  .finding p {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+
+  .finding .finding-source {
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-top: 12px;
+  }
+
+  /* Percentile visualization */
+  .percentile-track {
+    width: 100%;
+    height: 24px;
+    background: var(--bg-dark);
+    position: relative;
+    margin: 16px 0 8px;
+    overflow: hidden;
+  }
+
+  .percentile-fill {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background: var(--ink-light);
+    width: 99.5%;
+    transition: none;
+  }
+
+  .percentile-marker {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 0.5%;
+    background: var(--red);
+    min-width: 3px;
+  }
+
+  .percentile-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: var(--ink-faded);
+    text-transform: uppercase;
+  }
+
+  /* Source table */
+  .source-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9px;
+  }
+
+  .source-table th {
+    text-align: left;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 400;
+  }
+
+  .source-table td {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--rule);
+    color: var(--ink-mid);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  .source-table td:first-child {
+    width: 24px;
+    color: var(--ink-faded);
+    font-size: 8px;
+  }
+
+  .source-table td:nth-child(2) {
+    padding-right: 16px;
+    font-size: 9px;
+  }
+
+  .source-table td:last-child {
+    color: var(--ink-faded);
+    font-size: 8px;
+    white-space: nowrap;
+  }
+
+  /* Methodology */
+  .methodology {
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .methodology p {
+    font-size: 9px;
+    line-height: 1.8;
+    color: var(--ink-faded);
+  }
+
+  /* Footer */
+  .doc-footer {
+    padding: 28px 48px 40px;
+    border-top: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .doc-footer .brand {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .doc-footer .sub {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-top: 4px;
+  }
+
+  .doc-footer .link {
+    font-size: 9px;
+    color: var(--ink-faded);
+    letter-spacing: 1px;
+    text-align: right;
+  }
+
+  .doc-footer a {
+    color: var(--ink-mid);
+    text-decoration: none;
+  }
+
+  /* Scroll hint */
+  .scroll-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(26,26,26,0.3);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 100;
+    transition: opacity 0.5s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .scroll-hint .arrow {
+    animation: bob 1.5s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+  .scroll-hint.hidden { opacity: 0; pointer-events: none; }
+
+  @media (max-width: 600px) {
+    .doc-header, .doc-body { padding-left: 24px; padding-right: 24px; }
+    .doc-footer { padding: 24px; flex-direction: column; gap: 16px; align-items: flex-start; }
+    .doc-title { font-size: 32px; }
+    .number-hero .the-number { font-size: 60px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .bar-row { grid-template-columns: 120px 1fr 70px; }
+    .bar-label { font-size: 8.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="scroll-hint" id="scrollHint">
+  <span>Scroll</span>
+  <span class="arrow">↓</span>
+</div>
+
+<div class="document">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-classification">
+      <span>The Delusioneers — Scale Document</span>
+      <span class="red">February 2026 Data</span>
+    </div>
+
+    <div class="doc-title">62 Million</div>
+    <div class="doc-subtitle">A documentation of where one number sits<br>in the architecture of the internet</div>
+
+    <div class="doc-meta">
+      <div class="doc-meta-item">
+        <span class="label">Period</span>
+        <span class="value">February 2026</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="label">Primary Source</span>
+        <span class="value">CNN As Equals, March 2026</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="label">Traffic Data</span>
+        <span class="value">Similarweb / Semrush</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <!-- SECTION 1: The number -->
+    <div class="section" id="sec1">
+      <div class="section-label">The figure</div>
+
+      <div class="number-hero">
+        <span class="the-number">62M</span>
+        <span class="number-unit">Monthly visits — single website</span>
+        <span class="number-period">February 2026 · Source: CNN As Equals Investigation</span>
+      </div>
+
+      <div class="finding">
+        <p>62 million visits is not a dark corner of the internet. It is not fringe. It is not a hidden underbelly. This is the vocabulary we reach for when we talk about certain kinds of online harm. The vocabulary places the harm somewhere peripheral — somewhere you would have to go looking for it. The vocabulary is wrong. And the wrongness matters.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Tier 1 context -->
+    <div class="section" id="sec2">
+      <div class="section-label">Context — The top of the internet</div>
+
+      <div class="chart-title">Monthly visits — global top tier (rounded estimates, early 2026)</div>
+
+      <div class="bar-chart" id="chart1">
+        <div class="bar-row" data-delay="0">
+          <div class="bar-label">Google</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="100"></div></div>
+          <div class="bar-value">~100B+</div>
+        </div>
+        <div class="bar-row" data-delay="80">
+          <div class="bar-label">YouTube</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="80"></div></div>
+          <div class="bar-value">~30–80B</div>
+        </div>
+        <div class="bar-row" data-delay="160">
+          <div class="bar-label">Facebook</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="50"></div></div>
+          <div class="bar-value">~15–20B</div>
+        </div>
+        <div class="bar-row" data-delay="240">
+          <div class="bar-label">Wikipedia</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="30"></div></div>
+          <div class="bar-value">~5–6B</div>
+        </div>
+        <div class="bar-row" data-delay="320">
+          <div class="bar-label">Reddit</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="22"></div></div>
+          <div class="bar-value">~3–4B</div>
+        </div>
+        <div class="bar-row" data-delay="400">
+          <div class="bar-label">ChatGPT</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="12"></div></div>
+          <div class="bar-value">~1–2B</div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-divider"></div>
+        </div>
+
+        <div class="bar-row" data-delay="480" style="opacity:0.4;font-style:italic;">
+          <div class="bar-label" style="font-size:8px;color:var(--ink-faded);">Approx. 30–40 sites<br>worldwide clear 1B/mo</div>
+          <div class="bar-track" style="background:transparent;"></div>
+          <div class="bar-value"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: News tier -->
+    <div class="section" id="sec3">
+      <div class="section-label">Context — The global newsrooms</div>
+
+      <div class="chart-title">Monthly visits — major news & media sites (early 2026)</div>
+
+      <div class="bar-chart" id="chart2">
+        <div class="bar-row" data-delay="0">
+          <div class="bar-label">New York Times</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="100"></div></div>
+          <div class="bar-value">~500–700M</div>
+        </div>
+        <div class="bar-row" data-delay="60">
+          <div class="bar-label">BBC</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="95"></div></div>
+          <div class="bar-value">~500–700M</div>
+        </div>
+        <div class="bar-row" data-delay="120">
+          <div class="bar-label">CNN</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="70"></div></div>
+          <div class="bar-value">~480M</div>
+        </div>
+        <div class="bar-row" data-delay="180">
+          <div class="bar-label">Fox News</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="29"></div></div>
+          <div class="bar-value">~200M</div>
+        </div>
+        <div class="bar-row" data-delay="240">
+          <div class="bar-label">Reuters</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="12"></div></div>
+          <div class="bar-value">~80M</div>
+        </div>
+        <div class="bar-row" data-delay="300">
+          <div class="bar-label">Spotify (web)</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="10"></div></div>
+          <div class="bar-value">~65–80M</div>
+        </div>
+        <div class="bar-row" data-delay="360">
+          <div class="bar-label highlight">CBC News</div>
+          <div class="bar-track"><div class="bar-fill highlight" data-pct="8.7"></div></div>
+          <div class="bar-value highlight">~59M</div>
+        </div>
+        <div class="bar-row" data-delay="420">
+          <div class="bar-label subject">— The site —</div>
+          <div class="bar-track"><div class="bar-fill subject" data-pct="9.1"></div></div>
+          <div class="bar-value subject">~62M</div>
+        </div>
+        <div class="bar-row" data-delay="480">
+          <div class="bar-label">LA Times</div>
+          <div class="bar-track"><div class="bar-fill" data-pct="3.5"></div></div>
+          <div class="bar-value">~20–25M</div>
+        </div>
+
+      </div>
+
+      <div class="finding" style="margin-top:28px;">
+        <p>The site in question sits above Reuters. Above CBC. In the same traffic tier as Spotify. It is above the national public broadcaster — the largest newsroom in Canada.</p>
+        <div class="finding-source">Sources: Semrush, Similarweb — March 2026 data</div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Percentile -->
+    <div class="section" id="sec4">
+      <div class="section-label">Context — Distribution</div>
+
+      <div class="fact-block">
+        <span class="stat">&lt; 0.5%</span>
+        <span class="stat-label">of all websites ever clear 10 million monthly visits</span>
+      </div>
+
+      <p style="font-size:10.5px; line-height:1.8; color:var(--ink-mid); margin: 20px 0 8px;">Where 62 million sits across all websites on the internet:</p>
+
+      <div class="percentile-track">
+        <div class="percentile-fill"></div>
+        <div class="percentile-marker"></div>
+      </div>
+      <div class="percentile-labels">
+        <span>← The rest of the internet (99.5%+)</span>
+        <span>Top tier →</span>
+      </div>
+
+      <div class="finding" style="margin-top: 28px;">
+        <p>62 million monthly visits places a site in the top fraction of one percent of all websites on the internet by traffic. This is not a description of a peripheral platform. It is a description of infrastructure.</p>
+        <div class="finding-source">Source: EasyWP / VWO web traffic benchmarks, 2026</div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: The statement -->
+    <div class="section" id="sec5">
+      <div class="section-label">The record</div>
+
+      <div class="finding" style="border-color: var(--red);">
+        <p style="color:var(--ink);">This is the place the vocabulary calls a dark corner.<br><br>
+        It is a site in the same traffic tier as a national broadcaster. The scale at which it operates is the scale at which the harm is hosted. The two are not separable.</p>
+      </div>
+
+      <div class="fact-block" style="border-left-color: var(--red); margin-top: 24px;">
+        <p>The 62 million figure comes from CNN's March 2026 As Equals investigation. It represents total monthly visits to the site in February 2026, as reported by CNN's analysis. This document places that number in context. It draws no conclusions about individuals. It documents scale.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 6: Sources -->
+    <div class="section" id="sec6">
+      <div class="section-label">Sources</div>
+
+      <table class="source-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Source</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><a href="https://www.cnn.com/interactive/2026/03/world/expose-rape-assault-online-vis-intl/index.html" target="_blank" style="color:var(--ink-mid);text-decoration:none;">CNN As Equals — Exposing a global online network, March 2026</a></td>
+            <td>Primary</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><a href="https://www.semrush.com/website/top/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — Most Visited Websites, February 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><a href="https://www.similarweb.com/blog/research/market-research/most-visited-websites/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Similarweb — Top 100 Most Visited Websites, February 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><a href="https://www.semrush.com/website/nytimes.com/overview/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — nytimes.com overview, March 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><a href="https://www.semrush.com/website/bbc.com/overview/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — bbc.com overview, March 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><a href="https://www.semrush.com/website/cnn.com/overview/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — cnn.com overview, March 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><a href="https://www.semrush.com/website/reuters.com/overview/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — reuters.com overview, February 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><a href="https://www.semrush.com/website/spotify.com/overview/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Semrush — spotify.com overview, March 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><a href="https://www.similarweb.com/website/cbc.ca/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Similarweb — cbc.ca overview, March 2026</a></td>
+            <td>Traffic data</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><a href="https://pressgazette.co.uk/media-audience-and-business-data/media_metrics/biggest-news-websites-in-the-world/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Press Gazette — World's biggest news websites, 2026</a></td>
+            <td>Industry ranking</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><a href="https://vwo.com/blog/website-traffic-statistics/" target="_blank" style="color:var(--ink-mid);text-decoration:none;">VWO — Top 50 Website Traffic Statistics, 2026</a></td>
+            <td>Benchmark data</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td><a href="https://backlinko.com/most-popular-websites" target="_blank" style="color:var(--ink-mid);text-decoration:none;">Backlinko — Top 100 Most Visited Websites, April 2026</a></td>
+            <td>Industry ranking</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="methodology">
+        <p><strong style="color:var(--ink-mid);letter-spacing:1px;text-transform:uppercase;font-size:8px;">Methodology</strong><br><br>
+        All traffic figures are drawn from public third-party web analytics tools (primarily Similarweb and Semrush) and industry rankings of the most-visited sites as of early 2026. Numbers are rounded into ranges (e.g., "~60M," "500–700M") to reflect that these tools estimate total visits rather than report exact first-party data. The 62 million monthly-visits figure comes from CNN's March 2026 As Equals investigation, which cites February 2026 traffic to the site in question.</p>
+      </div>
+    </div>
+
+  </div><!-- end doc-body -->
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div>
+      <div class="brand">The Delusioneers</div>
+      <div class="sub">thedelusioneers.substack.com · @the_delusioneers</div>
+    </div>
+    <div class="link">
+      <a href="https://www.cnn.com/interactive/2026/03/world/expose-rape-assault-online-vis-intl/index.html" target="_blank">CNN As Equals Investigation →</a><br>
+      <span style="font-size:8px;color:var(--ink-faded);">Primary source</span>
+    </div>
+  </div>
+
+</div><!-- end document -->
+
+<script>
+  const progressBar = document.getElementById('progressBar');
+  const scrollHint = document.getElementById('scrollHint');
+
+  // Scroll progress
+  window.addEventListener('scroll', () => {
+    const st = window.scrollY;
+    const dh = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (st / dh * 100) + '%';
+    if (st > 150) scrollHint.classList.add('hidden');
+    else scrollHint.classList.remove('hidden');
+  }, { passive: true });
+
+  // Intersection observer for sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Animate bar rows inside this section
+        const rows = entry.target.querySelectorAll('.bar-row');
+        rows.forEach((row, i) => {
+          const delay = parseInt(row.dataset.delay || 0);
+          setTimeout(() => {
+            row.classList.add('visible');
+            const fill = row.querySelector('.bar-fill');
+            if (fill) {
+              const pct = parseFloat(fill.dataset.pct || 0);
+              fill.style.width = pct + '%';
+            }
+          }, delay);
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
